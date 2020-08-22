@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Chat.css";
 import { Avatar, IconButton } from "@material-ui/core";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
@@ -13,6 +13,8 @@ import firebase from "firebase";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 
+// const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
+
 function Chat() {
   const [input, setInput] = useState("");
   const { roomId } = useParams();
@@ -21,7 +23,19 @@ function Chat() {
   const [{ user }, dispatch] = useStateValue();
   const [userData, setUserData] = useState(null);
   const [emoji, setEmoji] = useState(false);
+  const messagesEndRef = useRef(null);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({
+      // behavior: "smooth",
+      block: "end",
+      inline: "nearest",
+    });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [msg]);
   useEffect(() => {
     setUserData(JSON.parse(localStorage.getItem("data")));
   }, []);
@@ -55,8 +69,10 @@ function Chat() {
     setInput("");
   };
   const emojiTabOpen = (e) => {
-    setEmoji(true);
+    setEmoji(!emoji);
+    // scrollToRef(messagesEndRef);
   };
+
   const onEmojiClick = (e) => {
     let sym = e.unified.split("-");
     let codesArray = [];
@@ -102,13 +118,14 @@ function Chat() {
             </span>
           </p>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <div className="chat-footer">
         <InsertEmoticonIcon onClick={emojiTabOpen} />
         {emoji ? (
-          <span className="chat-emoji">
+          <div className="chat-emoji">
             <Picker onSelect={onEmojiClick} />
-          </span>
+          </div>
         ) : (
           ""
         )}

@@ -7,9 +7,11 @@ import { Link } from "react-router-dom";
 function SidebarChat({ id, name, addNewChat }) {
   const [seed, setSeed] = useState("");
   const [messages, setMessages] = useState("");
+
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 1000));
   }, []);
+
   useEffect(() => {
     if (id) {
       db.collection("rooms")

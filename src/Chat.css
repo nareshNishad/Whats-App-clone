@@ -83,6 +83,15 @@
   color: gray;
 }
 .chat-emoji {
-  bottom: 0;
-  display: flex;
+  position: absolute;
+  bottom: 100px;
+}
+.chat-emoji .emoji-mart-scroll {
+  height: 30vh;
+}
+.chat-emoji .emoji-mart-light {
+  width: 61vw !important;
+}
+.chat-emoji .emoji-mart-bar {
+  display: none;
 }
