@@ -11,7 +11,6 @@ import { useStateValue } from "./StateProvider";
 
 function Sidebar() {
   const [rooms, setRooms] = useState([]);
-  const [{ user }, dispatch] = useStateValue();
 
   useEffect(() => {
     const unsubscribe = db

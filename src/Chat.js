@@ -8,7 +8,6 @@ import InsertEmoticonIcon from "@material-ui/icons/InsertEmoticon";
 import MicIcon from "@material-ui/icons/Mic";
 import { useParams } from "react-router-dom";
 import db from "./firebase";
-import { useStateValue } from "./StateProvider";
 import firebase from "firebase";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
@@ -20,14 +19,13 @@ function Chat() {
   const { roomId } = useParams();
   const [roomName, setRoomName] = useState("");
   const [msg, setMsg] = useState([]);
-  const [{ user }, dispatch] = useStateValue();
   const [userData, setUserData] = useState(null);
   const [emoji, setEmoji] = useState(false);
   const messagesEndRef = useRef(null);
+  const [seed, setSeed] = useState("");
 
   const scrollToBottom = () => {
     messagesEndRef.current.scrollIntoView({
-      // behavior: "smooth",
       block: "end",
       inline: "nearest",
     });
@@ -38,22 +36,26 @@ function Chat() {
   }, [msg]);
   useEffect(() => {
     setUserData(JSON.parse(localStorage.getItem("data")));
+    setSeed(Math.floor(Math.random() * 1000));
   }, []);
 
   useEffect(() => {
     if (roomId) {
       db.collection("rooms")
         .doc(roomId)
-        .onSnapshot((snapshot) => setRoomName(snapshot.data().name));
+        .onSnapshot((snapshot) => {
+          setRoomName(snapshot.data().name);
+        });
 
       db.collection("rooms")
         .doc(roomId)
         .collection("messages")
         .orderBy("timestamp", "asc")
-        .onSnapshot((snapshot) =>
-          setMsg(snapshot.docs.map((doc) => doc.data()))
-        );
+        .onSnapshot((snapshot) => {
+          setMsg(snapshot.docs.map((doc) => doc.data()));
+        });
     }
+
     setEmoji(false);
     setInput("");
   }, [roomId]);
@@ -61,11 +63,13 @@ function Chat() {
   const sendMessage = (e) => {
     e.preventDefault();
     console.log("Typed", input);
-    db.collection("rooms").doc(roomId).collection("messages").add({
-      message: input,
-      name: userData.displayName,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    if (input) {
+      db.collection("rooms").doc(roomId).collection("messages").add({
+        message: input,
+        name: userData.displayName,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    }
     setInput("");
   };
   const emojiTabOpen = (e) => {
@@ -84,7 +88,7 @@ function Chat() {
   return (
     <div className="chat">
       <div className="chat-header">
-        <Avatar />
+        <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
         <div className="chat-headerInfo">
           <h3>{roomName}</h3>
           <p>
