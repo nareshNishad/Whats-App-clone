@@ -35,7 +35,7 @@ function Chat() {
     scrollToBottom();
   }, [msg]);
   useEffect(() => {
-    setUserData(JSON.parse(localStorage.getItem("data")));
+    setUserData(JSON.parse(sessionStorage.getItem("data")));
     setSeed(Math.floor(Math.random() * 1000));
   }, []);
 
@@ -62,7 +62,7 @@ function Chat() {
 
   const sendMessage = (e) => {
     e.preventDefault();
-    console.log("Typed", input);
+    // console.log("Typed", input);
     if (input) {
       db.collection("rooms").doc(roomId).collection("messages").add({
         message: input,

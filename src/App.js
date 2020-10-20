@@ -10,7 +10,7 @@ function App() {
   const [userLogedIn, setUser] = useState(null);
 
   React.useEffect(() => {
-    const data = localStorage.getItem("data");
+    const data = sessionStorage.getItem("data");
     if (data) {
       setUser(JSON.parse(data));
     }
